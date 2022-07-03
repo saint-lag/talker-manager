@@ -1,4 +1,4 @@
-const { HTTP_UNAUTHORIZED_STATUS } = require('../http.codes');
+const { HTTP_UNAUTHORIZED_STATUS } = require('../utils/http.codes');
 
 function tokenValidation(req, res, next) {
   const { authorization } = req.headers;
@@ -8,7 +8,7 @@ function tokenValidation(req, res, next) {
       .status(HTTP_UNAUTHORIZED_STATUS)
       .json({ message: 'Token não encontrado' });
   }
-  if (!authorization < 16) {
+  if (authorization.length < 16) {
     return res
       .status(HTTP_UNAUTHORIZED_STATUS)
       .json({ message: 'Token inválido' });

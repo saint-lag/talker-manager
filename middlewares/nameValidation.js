@@ -1,4 +1,4 @@
-const { HTTP_BAD_REQUEST_STATUS } = require('../http.codes');
+const { HTTP_BAD_REQUEST_STATUS } = require('../utils/http.codes');
 
 function nameValidation(req, res, next) {
   const { name } = req.body;
@@ -8,7 +8,7 @@ function nameValidation(req, res, next) {
       message: 'O campo "name" é obrigatório',
     });
   }
-  if (name < 3) {
+  if (name.length < 3) {
     return res.status(HTTP_BAD_REQUEST_STATUS).json({
       message: 'O "name" deve ter pelo menos 3 caracteres',
     });

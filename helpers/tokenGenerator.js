@@ -1,11 +1,12 @@
-function tokenGenerator(length) {
-  const a = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'.split('');
-  const b = [];
-  for (let i = 0; i < length; i += 1) {
-    const j = (Math.random() * (a.length - 1)).toFixed(0);
-    b[i] = a[j];
-  }
-  return b.join('');
+function tokenGenerator(len) {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+  const token = new Array(len).fill('');
+
+  token.forEach((_el, i) => {
+    token[i] = chars.charAt(Math.floor(Math.random() * chars.length));
+  });
+
+  return token.join('');
 }
 
 module.exports = { tokenGenerator };

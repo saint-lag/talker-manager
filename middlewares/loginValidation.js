@@ -1,11 +1,11 @@
 /* eslint-disable max-lines-per-function */
-const { HTTP_BAD_REQUEST_STATUS } = require('../http.codes');
+const { HTTP_BAD_REQUEST_STATUS } = require('../utils/http.codes');
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const { EMAIL_REGEX } = require('../utils/regex'); 
 
 function loginValidation(req, res, next) {
   const { email, password } = req.body;
-  const isValidEmail = emailRegex.test(email);
+  const isValidEmail = EMAIL_REGEX.test(email);
 
   if (!email) {
     return res
