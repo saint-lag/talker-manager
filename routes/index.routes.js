@@ -4,13 +4,16 @@ const router = Router();
 
 const FILE_PATH = './talker.json';
 
-const HTTP_OK_STATUS = 200;
-const HTTP_NOT_FOUND_STATUS = 404;
+const {
+  HTTP_OK_STATUS = 200,
+  HTTP_NOT_FOUND_STATUS = 404,
+} = require('../http.codes');
 
 const TOKEN_LENGTH = 16;
 
-const { readFile } = require('../helpers/fs');
+const { readFile, writeFile } = require('../helpers/fs');
 const { tokenGenerator } = require('../helpers/tokenGenerator');
+const { tokenValidation } = require('../middlewares/tokenValidation');
 const { loginValidation } = require('../middlewares/loginValidation');
 
 router
@@ -37,6 +40,7 @@ router
   .post('/login', loginValidation, (_req, res) => {
     const token = tokenGenerator(TOKEN_LENGTH);
     res.status(HTTP_OK_STATUS).json({ token });
-  });
+  })
+  .post('/talker', tokenValidation, (req, res) => {});
 
 module.exports = { router };
