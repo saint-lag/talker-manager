@@ -7,7 +7,11 @@ const FILE_PATH = './talker.json';
 const HTTP_OK_STATUS = 200;
 const HTTP_NOT_FOUND_STATUS = 404;
 
+const TOKEN_LENGTH = 16;
+
 const { readFile } = require('../helpers/fs');
+const { tokenGenerator } = require('../helpers/tokenGenerator');
+const { loginValidation } = require('../middlewares/loginValidation');
 
 router
   .get('/talker', (_req, res) => {
@@ -29,6 +33,10 @@ router
       });
     }
     return res.status(HTTP_OK_STATUS).json(query);
+  })
+  .post('/login', loginValidation, (_req, res) => {
+    const token = tokenGenerator(TOKEN_LENGTH);
+    res.status(HTTP_OK_STATUS).json({ token });
   });
 
 module.exports = { router };
