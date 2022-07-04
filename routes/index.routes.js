@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 const { Router } = require('express');
 
 const router = Router();
@@ -19,7 +18,7 @@ const { TOKEN_LENGTH } = require('../utils/magicalNumbers');
 
 const { tokenGenerator } = require('../helpers/tokenGenerator');
 const { tokenValidation } = require('../middlewares/tokenValidation');
-const { loginValidation } = require('../middlewares/loginValidation');
+const { passwordValidation, emailValidation } = require('../middlewares/loginValidation');
 const { nameValidation } = require('../middlewares/nameValidation');
 const { ageValidation } = require('../middlewares/ageValidation');
 const {
@@ -55,7 +54,7 @@ router
     }
     return res.status(HTTP_OK_STATUS).json(query);
   })
-  .post('/login', loginValidation, (_req, res) => {
+  .post('/login', emailValidation, passwordValidation, (_req, res) => {
     const token = tokenGenerator(TOKEN_LENGTH);
     res.status(HTTP_OK_STATUS).json({ token });
   })

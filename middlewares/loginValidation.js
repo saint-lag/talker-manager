@@ -1,26 +1,30 @@
-/* eslint-disable max-lines-per-function */
 const { HTTP_BAD_REQUEST_STATUS } = require('../utils/http.codes');
 
-const { EMAIL_REGEX } = require('../utils/regex'); 
+const { EMAIL_REGEX } = require('../utils/regex');
 
-function loginValidation(req, res, next) {
-  const { email, password } = req.body;
-  const isValidEmail = EMAIL_REGEX.test(email);
-
+const emailValidation = (req, res, next) => {
+  const { email } = req.body;
+  
   if (!email) {
     return res
-      .status(HTTP_BAD_REQUEST_STATUS)
-      .json({ message: 'O campo "email" é obrigatório' });
+    .status(HTTP_BAD_REQUEST_STATUS)
+    .json({ message: 'O campo "email" é obrigatório' });
   }
-  if (!password) {
-    return res
-      .status(HTTP_BAD_REQUEST_STATUS)
-      .json({ message: 'O campo "password" é obrigatório' });
-  }
+  const isValidEmail = EMAIL_REGEX.test(email);
   if (!isValidEmail) {
     return res
       .status(HTTP_BAD_REQUEST_STATUS)
       .json({ message: 'O "email" deve ter o formato "email@email.com"' });
+  }
+  next();
+};
+
+const passwordValidation = (req, res, next) => {
+  const { password } = req.body;
+  if (!password) {
+    return res
+      .status(HTTP_BAD_REQUEST_STATUS)
+      .json({ message: 'O campo "password" é obrigatório' });
   }
   if (password.length < 6) {
     return res
@@ -29,6 +33,6 @@ function loginValidation(req, res, next) {
   }
 
   next();
-}
+};
 
-module.exports = { loginValidation };
+module.exports = { emailValidation, passwordValidation };

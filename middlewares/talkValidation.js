@@ -1,6 +1,3 @@
-/* eslint-disable sonarjs/cognitive-complexity */
-/* eslint-disable complexity */
-/* eslint-disable max-lines-per-function */
 const {
   HTTP_BAD_REQUEST_STATUS,
   HTTP_NOT_FOUND_STATUS,
