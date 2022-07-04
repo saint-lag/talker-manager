@@ -12,6 +12,7 @@ const {
   HTTP_OK_STATUS,
   HTTP_NOT_FOUND_STATUS,
   HTTP_CREATED_STATUS,
+  HTTP_NO_CONTENT_STATUS,
 } = require('../utils/http.codes');
 
 const { TOKEN_LENGTH } = require('../utils/magicalNumbers');
@@ -21,7 +22,12 @@ const { tokenValidation } = require('../middlewares/tokenValidation');
 const { loginValidation } = require('../middlewares/loginValidation');
 const { nameValidation } = require('../middlewares/nameValidation');
 const { ageValidation } = require('../middlewares/ageValidation');
-const { talkValidation } = require('../middlewares/talkValidation');
+const {
+  talkValidation,
+  watchedAtValidation,
+  rateValidation,
+  searchTalker,
+} = require('../middlewares/talkValidation');
 
 router
   .get('/talker', (_req, res) => {
@@ -29,6 +35,13 @@ router
     if (!FILE_JSON) return res.status(HTTP_OK_STATUS).send([]);
 
     return res.status(HTTP_OK_STATUS).json(FILE_JSON);
+  })
+  .get('/talker/search', tokenValidation, (req, res) => {
+    const FILE_JSON = readFileJSON();
+    const { q } = req.query;
+    const query = FILE_JSON.filter((obj) =>
+      obj.name.toLowerCase().includes(q.toLowerCase()));
+    res.status(HTTP_OK_STATUS).json(query);
   })
   .get('/talker/:id', (req, res) => {
     const FILE_JSON = readFileJSON();
@@ -52,6 +65,8 @@ router
     nameValidation,
     ageValidation,
     talkValidation,
+    rateValidation,
+    watchedAtValidation,
     (req, res) => {
       const FILE_JSON = readFileJSON();
       const { name, age, talk } = req.body;
@@ -79,19 +94,9 @@ router
     nameValidation,
     ageValidation,
     talkValidation,
-    (req, res, next) => {
-      const FILE_JSON = readFileJSON();
-      const { id } = req.params;
-      const talkerObj = FILE_JSON.find((obj) => obj.id === id);
-
-      if (!talkerObj) {
-        return res
-          .status(HTTP_NOT_FOUND_STATUS)
-          .json({ message: 'Talker não encontrado' });
-      }
-
-      next();
-    },
+    rateValidation,
+    watchedAtValidation,
+    searchTalker,
     (req, res) => {
       const FILE_JSON = readFileJSON();
       const { id } = req.params;
@@ -102,9 +107,18 @@ router
       FILE_JSON[index].talk = talk;
       const STR_FILE_JSON = JSON.stringify(FILE_JSON);
       writeFile(FILE_PATH, STR_FILE_JSON);
-
+      console.log(FILE_JSON);
       return res.status(HTTP_OK_STATUS).json(FILE_JSON[index]);
     },
-  );
+  )
+  .delete('/talker/:id', tokenValidation, searchTalker, (req, res) => {
+    const FILE_JSON = readFileJSON();
+    const { id } = req.params;
+    const index = FILE_JSON.findIndex((obj) => obj.id === id);
+    FILE_JSON.splice(FILE_JSON[index], 1);
+    const STR_FILE_JSON = JSON.stringify(FILE_JSON);
+    writeFile(FILE_PATH, STR_FILE_JSON);
+    return res.status(HTTP_NO_CONTENT_STATUS).send();
+  });
 
 module.exports = { router };

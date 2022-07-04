@@ -1,21 +1,29 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable complexity */
 /* eslint-disable max-lines-per-function */
-const { HTTP_BAD_REQUEST_STATUS } = require('../utils/http.codes');
+const {
+  HTTP_BAD_REQUEST_STATUS,
+  HTTP_NOT_FOUND_STATUS,
+} = require('../utils/http.codes');
 const { RATE_RANGE } = require('../utils/magicalNumbers');
 const { DAY_MONTH_YEAR_REGEX } = require('../utils/regex');
+
+const { readFile } = require('../helpers/fs');
+
+const FILE_PATH = './talker.json';
+const readFileJSON = () => readFile(FILE_PATH);
 
 const RATE_RANGE_START = RATE_RANGE[0];
 const RATE_RANGE_END = RATE_RANGE[RATE_RANGE.length - 1];
 
-function talkValidation(req, res, next) {
+const talkValidation = (req, res, next) => {
   const { talk } = req.body;
   if (!talk) {
     return res
       .status(HTTP_BAD_REQUEST_STATUS)
       .json({ message: 'O campo "talk" é obrigatório' });
   }
-  const { watchedAt, rate } = talk;
+  const { rate, watchedAt } = talk;
   if (!watchedAt) {
     return res
       .status(HTTP_BAD_REQUEST_STATUS)
@@ -26,6 +34,12 @@ function talkValidation(req, res, next) {
       .status(HTTP_BAD_REQUEST_STATUS)
       .json({ message: 'O campo "rate" é obrigatório' });
   }
+  next();
+};
+
+const rateValidation = (req, res, next) => {
+  const { talk } = req.body;
+  const { rate } = talk;
   if (Number.isNaN(rate)) {
     return res.status(HTTP_BAD_REQUEST_STATUS).json({
       message: 'O campo "rate" deve ser um inteiro de 1 à 5',
@@ -36,6 +50,11 @@ function talkValidation(req, res, next) {
       message: 'O campo "rate" deve ser um inteiro de 1 à 5',
     });
   }
+  next();
+};
+const watchedAtValidation = (req, res, next) => {
+  const { talk } = req.body;
+  const { watchedAt } = talk;
   const isWatchedAtValid = DAY_MONTH_YEAR_REGEX.test(watchedAt);
   if (!isWatchedAtValid) {
     return res.status(HTTP_BAD_REQUEST_STATUS).json({
@@ -44,6 +63,19 @@ function talkValidation(req, res, next) {
   }
 
   next();
-}
+};
+const searchTalker = (req, res, next) => {
+    const FILE_JSON = readFileJSON();
+    const { id } = req.params;
+    const talkerObj = FILE_JSON.find((obj) => obj.id === Number(id));
 
-module.exports = { talkValidation };
+    if (!talkerObj) {
+      return res
+        .status(HTTP_NOT_FOUND_STATUS)
+        .json({ message: 'Talker não encontrado' });
+    }
+
+    next();
+};
+
+module.exports = { talkValidation, rateValidation, watchedAtValidation, searchTalker };

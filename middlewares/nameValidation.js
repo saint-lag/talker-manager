@@ -8,7 +8,6 @@ function nameValidation(req, res, next) {
     });
   }
   if (name.length < 3) {
-    console.log(name);
     return res.status(HTTP_BAD_REQUEST_STATUS).json({
       message: 'O "name" deve ter pelo menos 3 caracteres',
     });
