@@ -69,7 +69,7 @@ router
     (req, res) => {
       const FILE_JSON = readFileJSON();
       const { name, age, talk } = req.body;
-      const { watchedAt, rate } = talk;
+      const { watchedAt, rate } = JSON.parse(talk);
       const CURRENT_TALKERS_LENGTH = FILE_JSON.length;
       const newObj = {
         id: CURRENT_TALKERS_LENGTH + 1,
