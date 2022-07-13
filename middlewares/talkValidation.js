@@ -20,7 +20,7 @@ const talkValidation = (req, res, next) => {
       .status(HTTP_BAD_REQUEST_STATUS)
       .json({ message: 'O campo "talk" é obrigatório' });
   }
-  const { watchedAt, rate } = JSON.parse(talk);
+  const { watchedAt, rate } = talk;
   if (!watchedAt) {
     return res
       .status(HTTP_BAD_REQUEST_STATUS)
@@ -36,7 +36,7 @@ const talkValidation = (req, res, next) => {
 
 const rateValidation = (req, res, next) => {
   const { talk } = req.body;
-  const { rate } = JSON.parse(talk);
+  const { rate } = talk;
   if (Number.isNaN(rate)) {
     return res.status(HTTP_BAD_REQUEST_STATUS).json({
       message: 'O campo "rate" deve ser um inteiro de 1 à 5',
@@ -51,7 +51,7 @@ const rateValidation = (req, res, next) => {
 };
 const watchedAtValidation = (req, res, next) => {
   const { talk } = req.body;
-  const { watchedAt } = JSON.parse(talk);
+  const { watchedAt } = talk;
   const isWatchedAtValid = DAY_MONTH_YEAR_REGEX.test(watchedAt);
   if (!isWatchedAtValid) {
     return res.status(HTTP_BAD_REQUEST_STATUS).json({
@@ -64,7 +64,7 @@ const watchedAtValidation = (req, res, next) => {
 const searchTalker = (req, res, next) => {
     const FILE_JSON = readFileJSON();
     const { id } = req.params;
-    const talkerObj = FILE_JSON.find((obj) => obj.id === Number(id));
+    const talkerObj = FILE_JSON.find((obj) => String(obj.id) === id);
 
     if (!talkerObj) {
       return res

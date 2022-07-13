@@ -95,7 +95,7 @@ router
       const FILE_JSON = readFileJSON();
       const { id } = req.params;
       const { talk, name, age } = req.body;
-      const { watchedAt, rate } = JSON.parse(talk);
+      const { watchedAt, rate } = talk;
       const index = FILE_JSON.findIndex((obj) => String(obj.id) === id);
       FILE_JSON[index].name = name;
       FILE_JSON[index].age = Number(age);
