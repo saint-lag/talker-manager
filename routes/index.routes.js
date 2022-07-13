@@ -69,21 +69,16 @@ router
     (req, res) => {
       const FILE_JSON = readFileJSON();
       const { name, age, talk } = req.body;
-      const { watchedAt, rate } = JSON.parse(talk);
       const CURRENT_TALKERS_LENGTH = FILE_JSON.length;
       const newObj = {
         id: CURRENT_TALKERS_LENGTH + 1,
         name,
         age,
-        talk: {
-          watchedAt,
-          rate,
-        },
+        talk,
       };
       FILE_JSON.push(newObj);
       const STR_FILE_JSON = JSON.stringify(FILE_JSON);
       writeFile(FILE_PATH, STR_FILE_JSON);
-
       return res.status(HTTP_CREATED_STATUS).json(newObj);
     },
   )
@@ -100,21 +95,21 @@ router
       const FILE_JSON = readFileJSON();
       const { id } = req.params;
       const { talk, name, age } = req.body;
-      const index = FILE_JSON.findIndex((obj) => obj.id === id);
+      const { watchedAt, rate } = JSON.parse(talk);
+      const index = FILE_JSON.findIndex((obj) => String(obj.id) === id);
       FILE_JSON[index].name = name;
-      FILE_JSON[index].age = age;
-      FILE_JSON[index].talk = talk;
+      FILE_JSON[index].age = Number(age);
+      FILE_JSON[index].talk = { watchedAt, rate: Number(rate) };
       const STR_FILE_JSON = JSON.stringify(FILE_JSON);
       writeFile(FILE_PATH, STR_FILE_JSON);
-      console.log(FILE_JSON);
       return res.status(HTTP_OK_STATUS).json(FILE_JSON[index]);
     },
   )
   .delete('/talker/:id', tokenValidation, searchTalker, (req, res) => {
     const FILE_JSON = readFileJSON();
     const { id } = req.params;
-    const index = FILE_JSON.findIndex((obj) => obj.id === id);
-    FILE_JSON.splice(FILE_JSON[index], 1);
+    const index = FILE_JSON.findIndex((obj) => String(obj.id) === id);
+    FILE_JSON.splice(index, 1);
     const STR_FILE_JSON = JSON.stringify(FILE_JSON);
     writeFile(FILE_PATH, STR_FILE_JSON);
     return res.status(HTTP_NO_CONTENT_STATUS).send();

@@ -53,7 +53,6 @@ const watchedAtValidation = (req, res, next) => {
   const { talk } = req.body;
   const { watchedAt } = JSON.parse(talk);
   const isWatchedAtValid = DAY_MONTH_YEAR_REGEX.test(watchedAt);
-  console.log(watchedAt, typeof watchedAt, isWatchedAtValid);
   if (!isWatchedAtValid) {
     return res.status(HTTP_BAD_REQUEST_STATUS).json({
       message: 'O campo "watchedAt" deve ter o formato "dd/mm/aaaa"',
