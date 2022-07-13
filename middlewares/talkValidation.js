@@ -26,7 +26,7 @@ const talkValidation = (req, res, next) => {
       .status(HTTP_BAD_REQUEST_STATUS)
       .json({ message: 'O campo "watchedAt" é obrigatório' });
   }
-  if (!rate) {
+  if (!rate && rate !== 0) {
     return res
       .status(HTTP_BAD_REQUEST_STATUS)
       .json({ message: 'O campo "rate" é obrigatório' });
